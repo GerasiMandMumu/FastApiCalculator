@@ -13,10 +13,10 @@ app = FastAPI()
 
 @app.get("/")
 async def root():
-    return FileResponse("index.html")
+    return FileResponse("app/index.html")
 
 @app.get("/eval/{phrase}", status_code=200)
-async def eval(response: Response, phrase: str = Path(min_length=3)):
+async def eval(response: Response, phrase: str = Path(default=None, min_length=3)):
     try:
         result = calculate(phrase)
         text_data = 'Результат = ' + str(result)
@@ -29,7 +29,7 @@ async def eval(response: Response, phrase: str = Path(min_length=3)):
          
     
 @app.post("/eval")
-async def eval(data = Body()):
+async def eval(data = Body(default=None)):
     try:
         phrase = data["phrase"]
         result = calculate(phrase)
