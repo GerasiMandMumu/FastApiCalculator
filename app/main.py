@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Response, Path, Body
+from fastapi import FastAPI, Response, Path, Body, Query
 from fastapi.responses import JSONResponse, FileResponse, PlainTextResponse
 from fastapi.encoders import jsonable_encoder
 import traceback
@@ -15,17 +15,18 @@ app = FastAPI()
 async def root():
     return FileResponse("app/index.html")
 
-@app.get("/eval/{phrase}", status_code=200)
-async def eval(response: Response, phrase: str = Path(default=None, min_length=3)):
+@app.get("/eval")
+async def eval(phrase: str = Query(default=None, min_length=3)):
     try:
+        print(phrase)
         result = calculate(phrase)
         text_data = 'Результат = ' + str(result)
-        response.status_code = 200
+        response_status_code = 200
     except BaseException:
-        response.status_code = 400
+        response_status_code = 400
         text_data = traceback.format_exc()
     finally:
-        return PlainTextResponse(content=text_data)
+        return PlainTextResponse(content=text_data, status_code=response_status_code)
          
     
 @app.post("/eval")
